@@ -27,9 +27,10 @@ py = Pytrack()
 l76 = L76GNSS(py, timeout=30)
 chrono = Timer.Chrono()
 chrono.start()
-#sd = SD()
-#os.mount(sd, '/sd')
-#f = open('/sd/gps-record.txt', 'w')
+# sd = SD()
+# os.mount(sd, '/sd')
+# f = open('/sd/gps-record.txt', 'w')
+
 while (True):
 
     coord = l76.coordinates()
