@@ -4,6 +4,9 @@ import network
 import os
 import time
 import utime
+import socket
+import struct
+from network import Sigfox
 from machine import RTC
 from machine import SD
 from machine import Timer
@@ -31,8 +34,20 @@ chrono.start()
 # os.mount(sd, '/sd')
 # f = open('/sd/gps-record.txt', 'w')
 
+# init Sigfox for RCZ1 (Europe)
+sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ1)
+# create a Sigfox socket
+s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
+# make the socket blocking
+s.setblocking(True)
+# configure it as uplink only
+s.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
+
 while (True):
 
     coord = l76.coordinates()
-    #f.write("{} - {}\n".format(coord, rtc.now()))
+    # f.write("{} - {}\n".format(coord, rtc.now()))
     print("{} - {} - {}".format(coord, rtc.now(), gc.mem_free()))
+    # datatosend = struct.pack('ii', int(coord[0] * 100000), int(coord[1] * 100000))
+    # print('sigfox send: {}\n'.format(datatosend))
+    # s.send(datatosend)
