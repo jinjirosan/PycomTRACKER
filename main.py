@@ -13,7 +13,6 @@ from machine import Timer
 from L76GNSS import L76GNSS
 from pytrack import Pytrack
 # setup as a station
-
 import gc
 
 time.sleep(2)
@@ -46,8 +45,9 @@ s.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
 while (True):
 
     coord = l76.coordinates()
-    # f.write("{} - {}\n".format(coord, rtc.now()))
+    # f.write("{} - {}\n".format(coord, rtc.now())) # only for SD card
     print("{} - {} - {}".format(coord, rtc.now(), gc.mem_free()))
-    # datatosend = struct.pack('ii', int(coord[0] * 100000), int(coord[1] * 100000))
-    # print('sigfox send: {}\n'.format(datatosend))
-    # s.send(datatosend)
+    #datatosend = struct.pack('ii', int(coord[0] * 100000), int(coord[1] * 100000))
+    datatosend = (coord[0], coord[1])
+    #print('sigfox send: {}\n'.format(datatosend))
+    #s.send(datatosend)
