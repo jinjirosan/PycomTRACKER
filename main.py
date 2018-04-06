@@ -12,11 +12,13 @@ from machine import SD
 from machine import Timer
 from L76GNSS import L76GNSS
 from pytrack import Pytrack
+
 # setup as a station
 import gc
 
 time.sleep(2)
 gc.enable()
+init_timer = time.time()
 
 # setup rtc
 rtc = machine.RTC()
@@ -29,25 +31,32 @@ py = Pytrack()
 l76 = L76GNSS(py, timeout=30)
 chrono = Timer.Chrono()
 chrono.start()
-# sd = SD()
-# os.mount(sd, '/sd')
-# f = open('/sd/gps-record.txt', 'w')
+sd = SD()
+os.mount(sd, '/sd')
+f = open('/sd/gps-record.txt', 'w')
 
-# init Sigfox for RCZ1 (Europe)
-sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ1)
-# create a Sigfox socket
-s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
-# make the socket blocking
-s.setblocking(True)
-# configure it as uplink only
-s.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
-
-while (True):
-
+while(True):
+    # time-counter configurations
+    final_timer = time.time()
+    diff = final_timer - init_timer
+    # save the coordinates in a new variable
     coord = l76.coordinates()
-    # f.write("{} - {}\n".format(coord, rtc.now())) # only for SD card
-    print("{} - {} - {}".format(coord, rtc.now(), gc.mem_free()))
-    #datatosend = struct.pack('ii', int(coord[0] * 100000), int(coord[1] * 100000))
-    datatosend = (coord[0], coord[1])
-    #print('sigfox send: {}\n'.format(datatosend))
-    #s.send(datatosend)
+    #coord = (43.345543, 7.890123)  # test coords instead of waiting for fix
+    # verify the coordinates received
+    if coord == (None, None):
+        print("Getting Location...")
+        continue
+    # time established to send the next Sigfox message
+    # diff <= 600 takes 10 min approximately to send the next message
+    if diff <= 10 and coord != (None, None):
+        print("Waiting for send the next Sigfox message")
+        continue
+    # write coords to sd card
+    f.write("{} - {}\n".format(coord, rtc.now()))  # save coords SD card
+    # send the Coordinates to Sigfox
+    #s.send(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))
+    print(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # temp to see what s.send transmits
+    print("Coordinates sent -> lat: " + str(coord[0]) + ", lng: " + str(coord[1]))
+    # reset the timer
+    time.sleep(5)
+    init_timer = final_timer

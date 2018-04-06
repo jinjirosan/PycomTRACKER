@@ -1,5 +1,3 @@
-known_nets = [('ssid', 'pass')]
-
 import machine
 import os
 from network import Sigfox
@@ -7,7 +5,9 @@ import binascii
 import socket
 import time
 
-#Initiates Sigfox communication
+known_nets = [('ssid', 'pass')]
+
+# Initiates Sigfox communication
 sigfox = Sigfox(mode=Sigfox.SIGFOX, rcz=Sigfox.RCZ1) #RCZ1/RCZ3 Europe / Japan / Korea
 
 #initiates the UART (USB) connection
@@ -16,7 +16,7 @@ os.dupterm(uart)
 
 #WiFi setup
 if machine.reset_cause() != machine.SOFT_RESET: #needed to avoid losing connection after a soft reboot
-	from network import WLAN
+    from network import WLAN
 	wl = WLAN()
 
 	# save the default ssid and auth

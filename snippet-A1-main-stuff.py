@@ -70,7 +70,7 @@ while True:
 			#Send shit to sigfox
 			print('I am going to send this hit count ')
 			print(hitCount)
-			#Send the bitcount to SigFox
+			# Send the bitcount to SigFox
 			hitCount = str(hitCount)
 			s.send("Hit" + hitCount)
 			counter = 1
@@ -89,4 +89,3 @@ while True:
 		elif (stateMotion != True) and (stateSigfox != True):
 			#Neither motion has occured or SigFox can send messages
 			pycom.rgbled(0x7f0000) #red
-			
