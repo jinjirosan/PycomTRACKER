@@ -1,3 +1,8 @@
+# /usr/bin/env python
+#
+# Maintainer 	: JinjiroSan
+# Version	: PycomTRACKER 0.5 - Sigfox_streamer - rewrite 0.1.1
+
 import machine
 import math
 import network
@@ -10,8 +15,9 @@ from network import Sigfox
 from machine import RTC
 from machine import SD
 from machine import Timer
-from L76GNSS import L76GNSS
+# from L76GNSS import L76GNSS  # replaced by micropyGPS
 from pytrack import Pytrack
+from micropyGPS import MicropyGPS
 
 # setup as a station
 import gc
@@ -46,15 +52,15 @@ while(True):
     if coord == (None, None):
         print("Getting Location...")
         continue
-    # time established to send the next Sigfox message
-    # diff <= 600 takes 10 min approximately to send the next message
+    # SigFox time wait (max 1 msg/10 mins)
+    # diff <= 600 takes 10 min approximately to send the next message. Use 10 for testing.
     if diff <= 10 and coord != (None, None):
-        print("Waiting for send the next Sigfox message")
+        print("Waiting to send the next Sigfox message")
         continue
     # write coords to sd card
     f.write("{} - {}\n".format(coord, rtc.now()))  # save coords SD card
     # send the Coordinates to Sigfox
-    #s.send(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))
+    s.send(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))
     print(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # temp to see what s.send transmits
     print("Coordinates sent -> lat: " + str(coord[0]) + ", lng: " + str(coord[1]))
     # reset the timer
