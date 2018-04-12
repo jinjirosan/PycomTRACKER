@@ -20,22 +20,35 @@ os.dupterm(uart)
 
 # setup WLAN
 wlan = WLAN(mode=WLAN.STA)  # get current object, without changing the mode
+wlan_timeout = time.time() + 15
+pycom.heartbeat(False)
+pycom.rgbled(0x090000)
 
-#wlan = network.WLAN(network.STA_IF)  # create station interface
-#wlan.active(True)       # activate the interface
-#wlan.ifconfig(config=(wlanconfig.airmax_ip, wlanconfig.airmax_subnet, wlanconfig.airmax_gateway, wlanconfig.airmax_ns))
-wlan.ifconfig(config=('dhcp'))
-wlan.scan()     # scan for available networks
-wlan.connect(wlanconfig.airmax_ssid, auth=(WLAN.WPA2, wlanconfig.airmax_key), timeout=5000)  # connect to the AP (Router)
-print('\nnetwork config:', wlan.ifconfig())
+if not wlan.isconnected():
+    #wlan = network.WLAN(network.STA_IF)  # create station interface
+    #wlan.active(True)       # activate the interface
+    #wlan.ifconfig(config=(wlanconfig.airmax_ip, wlanconfig.airmax_subnet, wlanconfig.airmax_gateway, wlanconfig.airmax_ns))
+    wlan.ifconfig(config=('dhcp'))
+    wlan.scan()     # scan for available networks
+    wlan.connect(wlanconfig.airmax_ssid, auth=(WLAN.WPA2, wlanconfig.airmax_key), timeout=5000)  # connect to the AP (Router)
+colors = [0x000009, 0x000900, 0x090000]
+
+while not wlan.isconnected() and time.time() < wlan_timeout:
+        pycom.rgbled(colors[time.time() % len(colors)])
+        time.sleep(1)
+
+try:
+    # print(">> boot.py: IP: {:,}".format(wlan.ifconfig()[0]))
+    print('\nnetwork config:', wlan.ifconfig())  # print full wifi info
+except:
+    pass
 
 # SigFox setup
-
-# Create a Sigfox socket
+# -> Create a Sigfox socket
 s = socket.socket(socket.AF_SIGFOX, socket.SOCK_RAW)
-# Make the socket blocking
+# -> Make the socket blocking
 s.setblocking(True)
-# Configure it as uplink only
+# -> Configure it as uplink only
 s.setsockopt(socket.SOL_SIGFOX, socket.SO_RX, False)
 
 # Time setup

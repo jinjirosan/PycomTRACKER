@@ -33,8 +33,13 @@ utime.sleep_ms(750)
 print('\nRTC Set from NTP to UTC:', rtc.now())
 utime.timezone(7200)
 print('Adjusted from UTC to EST timezone', utime.localtime(), '\n')
+
+# setup vars
 py = Pytrack()
-l76 = L76GNSS(py, timeout=30)
+my_gps = MicropyGPS()
+# my_gps.start_logging('test.txt', mode="new")
+# my_gps.write_log('micropyGPS test log\n')
+# l76 = L76GNSS(py, timeout=30)  # remove, replaced by micropyGPS
 chrono = Timer.Chrono()
 chrono.start()
 sd = SD()
