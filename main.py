@@ -41,27 +41,28 @@ while(True):
     # time-counter configurations
     final_timer = time.time()
     diff = final_timer - init_timer
+    GPSoutput = (poller.__dict__)
     # save the coordinates in a new variable
-    coord =   # find a way to get latitude-longitude from trackerlogger in coord variable once GPS fix is obtained
+    #coord = (xx,yy)  # find a way to get latitude-longitude from trackerlogger.py in coord variable once GPS fix is obtained
     #coord = (43.345543, 7.890123)  # test coords instead of waiting for fix
     # verify the coordinates received
-    if coord == (None, None):  # ensure GPS_Poller outputs None,None when no GPS fix (or better yet, trigger on GPS Fix value!)
+    if have_fix == (False):  # ensure GPS_Poller outputs None,None when no GPS fix (or better yet, trigger on GPS Fix value!)
         poller.run()
         print("Getting Location...")
         continue
-
+    locals().update(state)  # put the content of STATE into vars
     # SigFox time wait (max 1 msg/10 mins)
     # diff <= 600 takes 10 min approximately to send the next message. Use 10 for testing.
-    if diff <= 10 and coord != (None, None):
+    if diff <= 10 and have_fix == (True):
         print("Waiting to send the next Sigfox message")
         continue
     # write coords to sd card  # not sure if needed as trackerlogger does this too
     # f.write("{} - {}\n".format(coord, rtc.now()))  # save coords SD card
 
     # send the Coordinates to Sigfox
-    s.send(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # rewrite struct depending on coord
-    print(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # temp to see what s.send transmits
-    print("Coordinates sent -> lat: " + str(coord[0]) + ", lng: " + str(coord[1]))
+    #s.send(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # rewrite struct depending on coord
+    #print(struct.pack("<f", float(coord[0])) + struct.pack("<f", float(coord[1])))  # temp to see what s.send transmits
+    #print("Coordinates sent -> lat: " + str(coord[0]) + ", lng: " + str(coord[1]))
     # reset the timer
     time.sleep(5)
     init_timer = final_timer
