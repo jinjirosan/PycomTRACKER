@@ -24,3 +24,4 @@ As this generation of SiPy has limited memory available and some libraries are m
 
 ### Credits
 I'm building on the excellent work done by the Pycom team, Pycom library makers such as the standard L76GNSS.py, the MicropyGPS module and KarlBunch's pytrack-poller.
+Thx to Markus Jünemann for the excellent writeup on frozen modules on the Pycom platform.
