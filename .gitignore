@@ -101,3 +101,6 @@ ENV/
 
 test*
 wlanconfig.py
+
+# Mac OS specific
+.DS_Store
